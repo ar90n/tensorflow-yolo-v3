@@ -18,6 +18,8 @@ tf.app.flags.DEFINE_string(
 tf.app.flags.DEFINE_bool(
     'tiny', False, 'Use tiny version of YOLOv3')
 tf.app.flags.DEFINE_bool(
+    'tiny_pan', False, 'Use tiny with pan version of YOLOv3')
+tf.app.flags.DEFINE_bool(
     'spp', False, 'Use SPP version of YOLOv3')
 tf.app.flags.DEFINE_string(
     'ckpt_file', './saved_model/model.ckpt', 'Chceckpoint file')
@@ -26,6 +28,8 @@ tf.app.flags.DEFINE_string(
 def main(argv=None):
     if FLAGS.tiny:
         model = yolo_v3_tiny.yolo_v3_tiny
+    if FLAGS.tiny_pan:
+        model = yolo_v3_tiny.yolo_v3_tiny_pan
     elif FLAGS.spp:
         model = yolo_v3.yolo_v3_spp
     else:
