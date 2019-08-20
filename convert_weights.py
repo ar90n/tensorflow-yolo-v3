@@ -28,7 +28,7 @@ tf.app.flags.DEFINE_string(
 def main(argv=None):
     if FLAGS.tiny:
         model = yolo_v3_tiny.yolo_v3_tiny
-    if FLAGS.tiny_pan:
+    elif FLAGS.tiny_pan:
         model = yolo_v3_tiny.yolo_v3_tiny_pan
     elif FLAGS.spp:
         model = yolo_v3.yolo_v3_spp
