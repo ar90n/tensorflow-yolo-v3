@@ -11,14 +11,9 @@ _BATCH_NORM_DECAY = 0.9
 _BATCH_NORM_EPSILON = 1e-05
 _LEAKY_RELU = 0.1
 
-
-def _reorg2(inputs):
-    outputs_1 = inputs[:, ::2, ::2, :]
-    outputs_2 = inputs[:, ::2, 1::2, :]
-    outputs_3 = inputs[:, 1::2, ::2, :]
-    outputs_4 = inputs[:, 1::2, 1::2, :]
-    output = tf.concat([outputs_1, outputs_2, outputs_3, outputs_4], axis = 3)
-    return output
+def _reorg(inputs, stride):
+    return f.extract_image_patches(inputs,
+            [1, stride, stride, 1], [1, stride, stride, 1], [1, 1, 1, 1], 'VALID')
 
 def yolo_v3_tiny(inputs, num_classes, is_training=False, data_format='NCHW', reuse=False):
     """
@@ -225,19 +220,19 @@ def yolo_v3_tiny_pan(inputs, num_classes, is_training=False, data_format='NCHW',
                     #25 route  1
                     inputs = route_1
                     #26 reorg                    / 2  272 x 272 x  16 ->  136 x 136 x  64
-                    inputs = _reorg2(inputs)
+                    inputs = _reorg(inputs, 2)
                     #27 route  3 26
                     inputs = tf.concat([route_3, inputs], axis=1 if data_format == 'NCHW' else 3)
                     #28 reorg                    / 2  136 x 136 x  96 ->   68 x  68 x 384
-                    inputs = _reorg2(inputs)
+                    inputs = _reorg(inputs, 2)
                     #29 route  5 28
                     inputs = tf.concat([route_5, inputs], axis=1 if data_format == 'NCHW' else 3)
                     #30 reorg                    / 2   68 x  68 x 448 ->   34 x  34 x1792
-                    inputs = _reorg2(inputs)
+                    inputs = _reorg(inputs, 2)
                     #31 route  7 30
                     inputs = tf.concat([route_7, inputs], axis=1 if data_format == 'NCHW' else 3)
                     #32 reorg                    / 2   34 x  34 x1920 ->   17 x  17 x7680
-                    inputs = _reorg2(inputs)
+                    inputs = _reorg(inputs, 2)
                     #33 route  9 32
                     inputs = tf.concat([route_9, inputs], axis=1 if data_format == 'NCHW' else 3)
                     route_33 = inputs
